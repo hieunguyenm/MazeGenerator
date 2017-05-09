@@ -38,8 +38,7 @@ public class Maze extends PApplet {
         frameRate(PRESET_CELLS_ARRAY[presetCellOption] * 2);
         background(0);
         noStroke();
-        // fillCheckeredGrid();
-        // fillIsolatedGrid();
+        ellipseMode(CORNER);
 
         // Create initial starting point and frontiers
         int randomX = ThreadLocalRandom.current().nextInt(PRESET_CELLS_ARRAY[presetCellOption]);
@@ -68,6 +67,12 @@ public class Maze extends PApplet {
                     rect(SCREEN_PADDING + x * cellWidth, SCREEN_PADDING + y * cellWidth, cellWidth, cellWidth);
                 }
             }
+        }
+
+        fill(0, 0, 255);
+        for (Point frontierPoint : frontierList) {
+            ellipse(SCREEN_PADDING + (float) frontierPoint.getX() * cellWidth, SCREEN_PADDING + (float) frontierPoint.getY() * cellWidth,
+                    cellWidth, cellWidth);
         }
 
         if (frontier != null) {
@@ -187,30 +192,6 @@ public class Maze extends PApplet {
                 JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, PRESET_CELLS_ARRAY, PRESET_CELLS_ARRAY[0]);
         if (presetCellOption == -1) {
             System.exit(0);
-        }
-    }
-
-
-    // Sample function for generation of checkered grid
-    private void fillCheckeredGrid() {
-        boolean previousX = true;
-        boolean current = true;
-        for (int x = 0; x < totalCellsPerAxis; x++) {
-            for (int y = 0; y < totalCellsPerAxis; y++) {
-                grid[x][y] = current;
-                current = !current;
-            }
-            current = !previousX;
-            previousX = !previousX;
-        }
-    }
-
-    // Sample function for generation of isolated cells in a grid
-    private void fillIsolatedGrid() {
-        for (int x = 0; x < totalCellsPerAxis; x += 2) {
-            for (int y = 0; y < totalCellsPerAxis; y += 2) {
-                grid[x][y] = true;
-            }
         }
     }
 }
