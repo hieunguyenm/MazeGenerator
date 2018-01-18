@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -10,83 +10,27 @@ public class Frontier {
         this.grid = grid;
     }
 
-    public Point getNextFrontier(int mazeType) {
+    public Point getNextFrontier() {
         Point frontier = frontierList.get(ThreadLocalRandom.current().nextInt(frontierList.size()));
-
-        if (mazeType == MazeGenerator.CLASSIC) {
-            ArrayList<Point> origins = getPossibleOrigins(frontier);
-            Point randomOrigin = origins.get(ThreadLocalRandom.current().nextInt(origins.size()));
-            addFrontierToMaze(frontier, randomOrigin);
-            addPossibleFrontiers((int) frontier.getX(), (int) frontier.getY());
-        } else if (mazeType == MazeGenerator.DIAGONAL) {
-            ArrayList<Point> origins = getPossibleDiagonalOrigins(frontier);
-            Point randomOrigin = origins.get(ThreadLocalRandom.current().nextInt(origins.size()));
-            addFrontierToMaze(frontier, randomOrigin);
-            addPossibleDiagonalFrontiers((int) frontier.getX(), (int) frontier.getY());
-        }
+        ArrayList<Point> origins = getPossibleOrigins(frontier);
+        Point randomOrigin = origins.get(ThreadLocalRandom.current().nextInt(origins.size()));
+        addFrontierToMaze(frontier, randomOrigin);
+        addPossibleFrontiers((int) frontier.getX(), (int) frontier.getY());
         return frontier;
-    }
-
-    public void addPossibleDiagonalFrontiers(int x, int y) {
-        addPossibleFrontiers(x, y);
-
-        // Check top left cell
-        try {
-            if (!grid[x - 2][y - 2] && !isDuplicate(x - 2, y - 2)) {
-                frontierList.add(new Point(x - 2, y - 2));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
-
-        // Check top right cell
-        try {
-            if (!grid[x + 2][y - 2] && !isDuplicate(x + 2, y - 2)) {
-                frontierList.add(new Point(x + 2, y - 2));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
-
-        // Check bottom left cell
-        try {
-            if (!grid[x - 2][y + 2] && !isDuplicate(x - 2, y + 2)) {
-                frontierList.add(new Point(x - 2, y + 2));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
-
-        // Check bottom right cell
-        try {
-            if (!grid[x + 2][y + 2] && !isDuplicate(x + 2, y + 2)) {
-                frontierList.add(new Point(x + 2, y + 2));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
     }
 
     public void addPossibleFrontiers(int x, int y) {
         // Check cell above
-        try {
-            if (!grid[x][y - 2] && !isDuplicate(x, y - 2)) {
-                frontierList.add(new Point(x, y - 2));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
+        checkAndAdd(x, y - 2);
 
-        //Check right cell
-        try {
-            if (!grid[x + 2][y] && !isDuplicate(x + 2, y)) {
-                frontierList.add(new Point(x + 2, y));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
+        // Check right cell
+        checkAndAdd(x + 2, y);
 
-        // Check wall cell
-        try {
-            if (!grid[x][y + 2] && !isDuplicate(x, y + 2)) {
-                frontierList.add(new Point(x, y + 2));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
+        // Check cell below
+        checkAndAdd(x, y + 2);
 
         // Check left cell
-        try {
-            if (!grid[x - 2][y] && !isDuplicate(x - 2, y)) {
-                frontierList.add(new Point(x - 2, y));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
+        checkAndAdd(x - 2, y);
     }
 
     private void addFrontierToMaze(Point frontier, Point origin) {
@@ -99,70 +43,26 @@ public class Frontier {
         grid[(int) origin.getX() + dx / -2][(int) origin.getY() + dy / -2] = true;
     }
 
-    private ArrayList<Point> getPossibleDiagonalOrigins(Point frontier) {
-        ArrayList<Point> originList = new ArrayList<>();
-        int x = (int) frontier.getX();
-        int y = (int) frontier.getY();
-        originList.addAll(getPossibleOrigins(frontier));
-
-        // Try top left
-        try {
-            if (grid[x - 2][y - 2]) {
-                originList.add(new Point(x - 2, y - 2));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
-
-        // Try top right
-        try {
-            if (grid[x + 2][y - 2]) {
-                originList.add(new Point(x + 2, y - 2));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
-
-        // Try bottom left
-        try {
-            if (grid[x - 2][y + 2]) {
-                originList.add(new Point(x - 2, y + 2));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
-
-        // Try bottom right
-        try {
-            if (grid[x + 2][y + 2]) {
-                originList.add(new Point(x + 2, y + 2));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
-
-        return originList;
-    }
     private ArrayList<Point> getPossibleOrigins(Point frontier) {
         ArrayList<Point> originList = new ArrayList<>();
         int x = (int) frontier.getX();
         int y = (int) frontier.getY();
 
-        try {
-            if (grid[x][y - 2]) {
-                originList.add(new Point(x, y - 2));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
+        if (checkOrigin(x, y - 2)) {
+            originList.add(new Point(x, y - 2));
+        }
 
-        try {
-            if (grid[x + 2][y]) {
-                originList.add(new Point(x + 2, y));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
+        if (checkOrigin(x + 2, y)) {
+            originList.add(new Point(x + 2, y));
+        }
 
-        try {
-            if (grid[x][y + 2]) {
-                originList.add(new Point(x, y + 2));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
+        if (checkOrigin(x, y + 2)) {
+            originList.add(new Point(x, y + 2));
+        }
 
-        try {
-            if (grid[x - 2][y]) {
-                originList.add(new Point(x - 2, y));
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {}
+        if (checkOrigin(x - 2, y)) {
+            originList.add(new Point(x - 2, y));
+        }
 
         return originList;
     }
@@ -176,7 +76,25 @@ public class Frontier {
         return false;
     }
 
+    private boolean checkOrigin(int x, int y) {
+        try {
+            if (grid[x][y]) {
+                return true;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) { }
+        return false;
+    }
+
     public boolean isFrontierListEmpty() {
         return frontierList.isEmpty();
+    }
+
+    private void checkAndAdd(int x, int y) {
+        try {
+            if (!grid[x][y] && !isDuplicate(x, y)) {
+                frontierList.add(new Point(x, y));
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
     }
 }

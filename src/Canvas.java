@@ -2,7 +2,8 @@ public class Canvas {
     public static final int SCREEN_PADDING = 20;
     public static final int SCREEN_SIZE = 960 + SCREEN_PADDING * 2;
     public static final Integer[] PRESET_CELLS_ARRAY = {10, 40, 80, 160};
-    public static final int DRAW_AREA = SCREEN_SIZE - SCREEN_PADDING * 2;
+
+    private static final int DRAW_AREA = SCREEN_SIZE - SCREEN_PADDING * 2;
 
     private static int totalCellsPerAxis = 0;
     private static float cellWidth = 0;
