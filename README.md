@@ -1,6 +1,6 @@
-# Maze Generator
+# MazeGenerator Generator
 
-Maze generator using a [modified randomized version of Prim's Algorithm](https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Prim.27s_algorithm) written in Java.
+MazeGenerator generator using a [modified randomized version of Prim's Algorithm](https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Prim.27s_algorithm) written in Java.
 
 ![](https://i.imgur.com/wYhd2DX.gif)
 
